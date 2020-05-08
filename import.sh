@@ -105,18 +105,18 @@ fi
 #------------- Import Coastlines Data ----------------------------------------
 #
 # Coastlines are notoriously tricky and are therefore excluded from the data
-# imported above. Instead, there is a tool called OSMCoastline preprocesses
-# the data and produces them as shapefiles. The resulting files are provided
-# at https://osmdata.openstreetmap.de/data/coast.html. We simply download the
-# data sets we need and import them into the database, each in their own
-# table.
+# imported above. Instead, there is a tool called OSMCoastline that
+# preprocesses # the data and produces them as shapefiles. The resulting files
+# are provided # at https://osmdata.openstreetmap.de/data/coast.html. We
+# simply download the data sets we need and import them into the database,
+# each in their own table.
 #
 # We need three sets: Water polygons in regular and reduced resolution and
 # the coastlines themselves. These are available at:
 #
 #     https://osmdata.openstreetmap.de/download/$SHAPE-split-3857.zip
 #
-# where the shapes we are interested in is water-polygons,
+# where the shapes we are interested in are water-polygons,
 # simplified-water-polygons, and coastlines.
 #
 # We place their contents into database tables with the same name but
@@ -149,9 +149,9 @@ if [ ! -f "$BASEMAP/no-shapes" ]; then
         shp2pgsql -d -s 3857 -I "$SPOOLDIR/$1-split-3857/$2" $3 \
             | psql -d basemap
     }
-#   import_shape water-polygons water_polygons water_polygons
-#   import_shape simplified-water-polygons \
-#       simplified_water_polygons simplified_water_polygons
+    import_shape water-polygons water_polygons water_polygons
+    import_shape simplified-water-polygons \
+        simplified_water_polygons simplified_water_polygons
     import_shape coastlines lines coastlines
 fi
 
