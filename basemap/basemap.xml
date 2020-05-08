@@ -1,0 +1,257 @@
+<!DOCTYPE Map>
+<!-- 
+    water_color  "#e1eef6"
+    shore_color  "#557eaa"
+    border_color "#b826e5"
+-->
+
+<Map background-color="#ffffffff" buffer-size="256"
+    srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0
+         +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over"
+>
+
+    <!-- The data source defines the basic parameters where to take the
+         data from. We all have it in a PostGIS database, so there is only
+         one source.
+    -->
+    <Datasource name="psql">
+        <Parameter name="type">postgis</Parameter>
+        <Parameter name="port">5432</Parameter>
+        <Parameter name="estimate_extent">false</Parameter>
+        <Parameter name="extent">
+            -20037508,-19929239,20037508,19929239
+        </Parameter>
+        <Parameter name="dbname">basemap</Parameter>
+        <Parameter name="geometry_field">geom</Parameter>
+        <Parameter name="srid">3857</Parameter>
+    </Datasource>
+
+
+    <!-- lowzoom is up to 9, which translates to 500,000 -->
+
+
+    <!-- Water casing
+    
+         It goes first so that touching water areas overpaint the
+         casing.
+    -->
+
+    <Layer name="coastlines" maximum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">coastlines</Parameter>
+        </Datasource>
+        <StyleName>water-casing</StyleName>
+    </Layer>
+    <Layer name="river-casing" maximum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_polygon
+                 WHERE waterway is not null)
+                as subquery
+            </Parameter>
+        </Datasource>
+        <StyleName>water-contour</StyleName>
+    </Layer>
+    <Layer name="lake-casing" maximum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_polygon
+                 WHERE "natural" = 'water' and way_area &gt; 500000
+                ) as subquery
+            </Parameter>
+        </Datasource>
+        <StyleName>water-casing</StyleName>
+    </Layer>
+
+
+
+    <!-- Water areas
+    -->
+    <Layer name="ocean-lowzoom" minimum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">simplified_water_polygons</Parameter>
+        </Datasource>
+        <StyleName>water-fill</StyleName>
+    </Layer>
+
+    <Layer name="ocean" maximum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">water_polygons</Parameter>
+        </Datasource>
+        <StyleName>water-fill</StyleName>
+    </Layer>
+
+    <Layer name="rivers" maximum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_polygon
+                 WHERE waterway is not null)
+                as subquery
+            </Parameter>
+        </Datasource>
+        <StyleName>water-fill</StyleName>
+    </Layer>
+    <Layer name="lakes" maximum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_polygon
+                WHERE "natural" = 'water' and way_area &gt; 500000) as subquery
+            </Parameter>
+        </Datasource>
+        <StyleName>water-fill</StyleName>
+    </Layer>
+
+
+    <!-- Borders
+    -->
+
+    <Layer name="border-2" maximum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_line
+                    WHERE boundary = 'administrative' and admin_level = '2'
+                ) as subquery
+            </Parameter>
+        </Datasource>
+        <StyleName>border-2-casing</StyleName>
+        <StyleName>border-2</StyleName>
+    </Layer>
+    <Layer name="border-2-lowzoom" minimum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_line
+                    WHERE boundary = 'administrative' and admin_level = '2'
+                ) as subquery
+            </Parameter>
+        </Datasource>
+        <StyleName>border-2-lowzoom</StyleName>
+    </Layer>
+
+    <Layer name="border-4" maximum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_line
+                    WHERE boundary = 'administrative' and admin_level = '4'
+                ) as subquery
+            </Parameter>
+        </Datasource>
+        <StyleName>border-4-casing</StyleName>
+        <StyleName>border-4</StyleName>
+    </Layer>
+    <Layer name="border-2-lowzoom" minimum-scale-denominator="500000">
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_line
+                    WHERE boundary = 'administrative' and admin_level = '4'
+                ) as subquery
+            </Parameter>
+        </Datasource>
+        <StyleName>border-4-lowzoom</StyleName>
+    </Layer>
+
+
+    <!-- Styles
+    -->
+
+    <Style name="water-fill">
+        <Rule>
+            <PolygonSymbolizer fill="#e1eef6" fill-opacity="1.0"/>
+        </Rule>
+        <Rule>
+            <LineSymbolizer
+                stroke="#e1eef6"
+                stroke-linecap="square"
+                stroke-linejoin="round"
+                stroke-width="0.6"
+            />
+        </Rule>
+    </Style>
+    <Style name="water-contour">
+        <Rule>
+            <LineSymbolizer
+                stroke="#557eaa"
+                stroke-linecap="square"
+                stroke-linejoin="round"
+                stroke-width="0.6"
+            />
+        </Rule>
+    </Style>
+    <Style name="water-casing">
+        <Rule>
+            <LineSymbolizer
+                stroke="#557eaa"
+                stroke-linecap="square"
+                stroke-linejoin="round"
+                stroke-width="1.8"
+            />
+        </Rule>
+    </Style>
+
+
+    <Style name="border-2">
+        <Rule>
+            <LineSymbolizer
+                stroke="#b873cf"
+                stroke-linecap="square"
+                stroke-linejoin="round"
+                stroke-width="3.0"
+                stroke-dasharray="20,8,2,8"
+            />
+        </Rule>
+    </Style>
+    <Style name="border-2-casing">
+        <Rule>
+            <LineSymbolizer
+                stroke="#b873cf"
+                stroke-opacity="0.20"
+                stroke-linecap="square"
+                stroke-linejoin="miter"
+                stroke-width="15"
+            />
+        </Rule>
+    </Style>
+    <Style name="border-2-lowzoom">
+        <Rule>
+            <LineSymbolizer
+                stroke="#e3c7ec"
+                stroke-linecap="square"
+                stroke-linejoin="miter"
+                stroke-width="2.5"
+            />
+        </Rule>
+    </Style>
+
+    <Style name="border-4">
+        <Rule>
+            <LineSymbolizer
+                stroke="#b873cf"
+                stroke-linecap="square"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                stroke-dasharray="20,12"
+            />
+        </Rule>
+    </Style>
+    <Style name="border-4-casing">
+        <Rule>
+            <LineSymbolizer
+                stroke="#b873cf"
+                stroke-opacity="0.20"
+                stroke-linecap="square"
+                stroke-linejoin="miter"
+                stroke-width="10"
+            />
+        </Rule>
+    </Style>
+    <Style name="border-4-lowzoom">
+        <Rule>
+            <LineSymbolizer
+                stroke="#e3c7ec"
+                stroke-linecap="square"
+                stroke-linejoin="miter"
+                stroke-width="1"
+            />
+        </Rule>
+    </Style>
+</Map>
+
