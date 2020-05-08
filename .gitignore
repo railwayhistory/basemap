@@ -1,3 +1,9 @@
+#
+/spool
+/basemap/no-planet
+/basemap/no-shapes
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
