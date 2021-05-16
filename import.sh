@@ -97,7 +97,9 @@ if [ ! -f "$BASEMAP/no-planet" ]; then
 
     #--- Import the planet into the database.
     #
-    osm2pgsql --slim --database basemap "$PLANET_TARGET"
+    # The -C option should be around 1.3 times the size of $PLANET_TARGET in
+    # MBytes. (So the 3000 here is for a 2GB file.)
+    osm2pgsql --slim --database -C 3000 basemap "$PLANET_TARGET"
 
 fi
 
