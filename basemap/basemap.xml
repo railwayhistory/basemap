@@ -56,7 +56,9 @@
         <Datasource base="psql">
             <Parameter name="table">
                 (SELECT way as geom FROM planet_osm_polygon
-                 WHERE "natural" = 'water' and way_area &gt; 500000
+		 WHERE
+		    "natural" = 'water'
+		    and way_area &gt; 500000
                 ) as subquery
             </Parameter>
         </Datasource>
@@ -70,6 +72,22 @@
     <Layer name="ocean-lowzoom" minimum-scale-denominator="500000">
         <Datasource base="psql">
             <Parameter name="table">simplified_water_polygons</Parameter>
+        </Datasource>
+        <StyleName>water-fill</StyleName>
+    </Layer>
+    <Layer
+        name="lakes-lowzoom"
+        minimum-scale-denominator="500000"
+        maximum-scale-denominator="2000000"
+    >
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_polygon
+		WHERE
+		    "natural" = 'water'
+		    and way_area &gt; 10000000
+		) as subquery
+            </Parameter>
         </Datasource>
         <StyleName>water-fill</StyleName>
     </Layer>
@@ -95,7 +113,10 @@
         <Datasource base="psql">
             <Parameter name="table">
                 (SELECT way as geom FROM planet_osm_polygon
-                WHERE "natural" = 'water' and way_area &gt; 500000) as subquery
+		WHERE
+		    "natural" = 'water'
+		    and way_area &gt; 500000
+		) as subquery
             </Parameter>
         </Datasource>
         <StyleName>water-fill</StyleName>
@@ -116,7 +137,10 @@
         <StyleName>border-2-casing</StyleName>
         <StyleName>border-2</StyleName>
     </Layer>
-    <Layer name="border-2-lowzoom" minimum-scale-denominator="500000">
+    <Layer name="border-2-lowzoom"
+           minimum-scale-denominator="500000"
+           maximum-scale-denominator="8000000"
+    >
         <Datasource base="psql">
             <Parameter name="table">
                 (SELECT way as geom FROM planet_osm_line
@@ -125,6 +149,16 @@
             </Parameter>
         </Datasource>
         <StyleName>border-2-lowzoom</StyleName>
+    </Layer>
+    <Layer name="border-2-superlow" minimum-scale-denominator="8000000">
+        <Datasource base="psql">
+            <Parameter name="table">
+                (SELECT way as geom FROM planet_osm_line
+                    WHERE boundary = 'administrative' and admin_level = '2'
+                ) as subquery
+            </Parameter>
+        </Datasource>
+        <StyleName>border-2-superlow</StyleName>
     </Layer>
 
     <Layer name="border-4" maximum-scale-denominator="500000">
@@ -138,7 +172,10 @@
         <StyleName>border-4-casing</StyleName>
         <StyleName>border-4</StyleName>
     </Layer>
-    <Layer name="border-2-lowzoom" minimum-scale-denominator="500000">
+    <Layer name="border-4-lowzoom"
+           minimum-scale-denominator="500000"
+           maximum-scale-denominator="8000000"
+    >
         <Datasource base="psql">
             <Parameter name="table">
                 (SELECT way as geom FROM planet_osm_line
@@ -217,6 +254,16 @@
                 stroke-linecap="square"
                 stroke-linejoin="miter"
                 stroke-width="2.5"
+            />
+        </Rule>
+    </Style>
+    <Style name="border-2-superlow">
+        <Rule>
+            <LineSymbolizer
+                stroke="#e3c7ec"
+                stroke-linecap="square"
+                stroke-linejoin="miter"
+                stroke-width="1"
             />
         </Rule>
     </Style>
