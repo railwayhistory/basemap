@@ -6,8 +6,8 @@
 #
 #     sudo -u basemap ./import.sh
 #
-# If the auxiliary files used aren’t in /var/lib/basemap, specify their
-# directory as the first argument.
+# If the auxiliary files used aren’t in a directory basemap below where this
+# script lives, specify their directory as the first argument.
 #
 # This script may not actually work on BSD systems.
 
@@ -19,7 +19,8 @@
 
 # Find out where our files live
 #
-# This is either the first argument or, if that is missing, /var/lib/basemap.
+# This is either the first argument or, if that is missing, basemap under the
+# script’s directory.
 # Error out early if that directory doesn’t exist.
 #
 # The directory name will end up in $BASEMAP.
@@ -27,7 +28,7 @@
 if [ ! -z "$1" ]; then
     BASEMAP="$1"
 else
-    BASEMAP=/var/lib/basemap
+    BASEMAP="$(dirname $0)/basemap"
 fi
 if [ ! -d "$BASEMAP" ]; then
     echo "Basemap directory $BASEMAP not found."
