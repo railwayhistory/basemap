@@ -71,7 +71,7 @@ fi
 # http://download.geofabrik.de/ for those. A full planet should be downloaded
 # via one of the mirrors. See https://wiki.openstreetmap.org/wiki/Planet.osm
 #
-PLANET_URI=https://download.geofabrik.de/europe/germany-latest.osm.pbf
+PLANET_URI=https://download.geofabrik.de/europe-latest.osm.pbf
 
 # For testing purposes, we skip this whole step if $BASEMAP/no-planet exists.
 #
