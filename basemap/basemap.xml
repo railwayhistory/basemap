@@ -125,7 +125,7 @@
 
     <!-- Borders
     -->
-
+    <!--
     <Layer name="border-2" maximum-scale-denominator="500000">
         <Datasource base="psql">
             <Parameter name="table">
@@ -185,7 +185,7 @@
         </Datasource>
         <StyleName>border-4-lowzoom</StyleName>
     </Layer>
-
+    -->
 
     <!-- Styles
     -->
@@ -224,7 +224,7 @@
         </Rule>
     </Style>
 
-
+    <!--
     <Style name="border-2">
         <Rule>
             <LineSymbolizer
@@ -300,5 +300,6 @@
             />
         </Rule>
     </Style>
+    -->
 </Map>
 
