@@ -76,7 +76,10 @@ class MapnikRenderer(object):
         m = mapnik.Map(*self.tile_size)
         mapnik.load_map(m, self.style)
 
-        self.mproj = mapnik.Projection(m.srs)
+        self.mproj = mapnik.ProjTransform(
+            mapnik.Projection("epsg:4326"),
+            mapnik.Projection(m.srs)
+        )
         self.gproj = TileProjection(self.max_zoom)
         self.thread_data = threading.local()
 
