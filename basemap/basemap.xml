@@ -78,7 +78,7 @@
     <Layer
         name="lakes-lowzoom"
         minimum-scale-denominator="500000"
-        maximum-scale-denominator="2000000"
+        maximum-scale-denominator="4000000"
     >
         <Datasource base="psql">
             <Parameter name="table">
