@@ -35,6 +35,7 @@ import os
 import sys
 import threading
 import hashlib
+import uuid
 from math import pi,exp,atan
 
 import falcon
@@ -161,16 +162,26 @@ class TileServer(object):
 
     def __init__(self, style):
         self.renderer = MapnikRenderer(style)
+        self.etag = str(uuid.uuid4())
 
     def on_get(self, req, resp, zoom, x, y):
         tile_desc = self.renderer.split_url(zoom, x, y)
         if tile_desc is None:
             raise falcon.HTTPNotFound()
 
-        tile = self.renderer.render(*tile_desc)
+        print(req.if_none_match)
+        print(self.etag)
 
-        resp.content_type = "image/png"
-        resp.body = tile
+        if not req.if_none_match is None and self.etag in req.if_none_match:
+            print("304 Not Modified")
+            resp.status = "304 Not Modified"
+        else:
+            print("200 OK")
+            tile = self.renderer.render(*tile_desc)
+
+            resp.content_type = "image/png"
+            resp.etag = self.etag
+            resp.body = tile
 
 
 def setup(app):
@@ -182,6 +193,7 @@ def setup(app):
     )
 
 
+print("Starting ...")
 application = falcon.API()
 setup(application)
 
